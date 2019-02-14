@@ -12,9 +12,15 @@ public class PageQueue {
         }
         return instance;
     }
+    private PageQueue() {
+        queue.add("http://www.it18zhang.com/");
+    }
     private final int Max = 10000;
     private LinkedList<String> queue = new LinkedList<String>();
-//将url放入队列中
+
+
+
+    //将url放入队列中
     public synchronized void addUrl(String url) {
         while (queue.size() >= Max){
             try {

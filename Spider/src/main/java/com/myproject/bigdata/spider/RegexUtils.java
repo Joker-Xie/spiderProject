@@ -16,26 +16,30 @@ public class RegexUtils {
         Matcher m = pattern.matcher(page);
         while (m.find()) {
             String url = m.group(1);
-            if (page.startsWith("http")) {
+            if (url.startsWith("http")) {
                 urls.add(url);
             }
-            else if(page.startsWith("/")){
+            else if(url.startsWith("/")){
                 String daomain = RegexUtils.paserDaomainnamme(srcUrl);
+                urls.add(daomain+url);
             }
         }
         return urls;
     }
 
-    private static String paserDaomainnamme(String srcUrl) {
+    public static String paserDaomainnamme(String srcUrl) {
         /*
          * https://www.douyu.com/xxxx
-         * url的正则表达式 http:\/\/[\u0000-\uffff&&[^\u005c\u0022]]*\/
+         * url的正则表达式 http:\/\/[\u0000-\uffff&&[^/]]*\/
          * */
-        Pattern pattern = Pattern.compile("http:\\/\\/[\\u0000-\\uffff&&[^\\u005c\\u0022]]*\\/");
+        if (!srcUrl.contains("/")){
+            return srcUrl;
+        }
+        Pattern pattern = Pattern.compile("http:\\/\\/[\\u0000-\\uffff&&[^\\/]]*\\/");
         Matcher m = pattern.matcher(srcUrl);
         while (m.find()) {
             String url = m.group();
-            return url;
+            return url.substring(0,url.length()-1);
         }
         return null;
     }

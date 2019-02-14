@@ -1,6 +1,8 @@
 package com.myproject.bigdata.spider;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -21,7 +23,38 @@ public class PageDownLoader {
     /*
     * 按照网页地址进行下载
     * */
-    public void downlodPage(String url){
+    private String pageDir = "d:/pages/";
+    public void downLoadPage(String url){
+        //1.下载网页内容
+        String pageCont = downDownload(url);
+        //将内容保存到本地
+        String localPath = pageDir+System.currentTimeMillis()+".html";
+        savePageToLocal(localPath,pageCont);
+        //2.解析网页
+        Set<String> hrefs = RegexUtils.paserPage(url,pageCont);
+        processHrefs(hrefs);
+    }
+
+    private void processHrefs(Set<String> hrefs) {
+        for (String url :hrefs){
+            PageQueue.getInstance().addUrl(url);
+        }
+        System.out.println("xxxxx");
+    }
+
+    //用于保存网页到本地
+    private void savePageToLocal(String localPath ,String pageCont) {
+        try {
+            FileOutputStream fos = new FileOutputStream(localPath);
+            fos.write(pageCont.getBytes());
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public String downDownload(String url){
         try {
             URL u = new URL(url);
             HttpURLConnection conn = (HttpURLConnection) u.openConnection();
@@ -36,9 +69,11 @@ public class PageDownLoader {
             baos.close();
             //这个是整个网页
             String pageStr = new String(baos.toByteArray());
-            Set<String> urls = RegexUtils.paserPage(url,pageStr);
+//            Set<String> urls = RegexUtils.paserPage(url,pageStr);
+            return pageStr;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 }

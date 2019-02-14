@@ -6,6 +6,9 @@ package com.myproject.bigdata.spider;
 public class Spider extends Thread {
     @Override
     public void run() {
-
+        while (true){
+            String url = PageQueue.getInstance().getFirstUrl();
+            PageDownLoader.getInstance().downLoadPage(url);
+        }
     }
 }
